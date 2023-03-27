@@ -1,0 +1,61 @@
+import tkinter as tk
+from tkinter import ttk
+
+class App:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Programa para Fonoaudióloga")
+        self.notebook = ttk.Notebook(self.master)
+        self.notebook.pack(fill='both', expand=True)
+        self.create_form_tab()
+        self.create_summary_tab()
+        self.patients = []
+
+    def create_form_tab(self):
+        self.form_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.form_tab, text="Formulario")
+        tk.Label(self.form_tab, text="Nombre Paciente:").grid(row=0, column=0)
+        self.patient_name_entry = tk.Entry(self.form_tab)
+        self.patient_name_entry.grid(row=0, column=1)
+        tk.Label(self.form_tab, text="Fecha de atención:").grid(row=1, column=0)
+        self.attention_date_entry = tk.Entry(self.form_tab)
+        self.attention_date_entry.grid(row=1, column=1)
+        tk.Label(self.form_tab, text="Comentario:").grid(row=2, column=0)
+        self.comment_entry = tk.Entry(self.form_tab)
+        self.comment_entry.grid(row=2, column=1)
+        tk.Button(self.form_tab, text="Agregar Paciente", command=self.add_patient).grid(row=3, column=0)
+        tk.Button(self.form_tab, text="Limpiar", command=self.clear_form).grid(row=3, column=1)
+
+    def create_summary_tab(self):
+        self.summary_tab = ttk.Frame(self.notebook)
+        self.notebook.add(self.summary_tab, text="Resumen")
+        self.treeview = ttk.Treeview(self.summary_tab, columns=("Nombre", "Fecha", "Comentario"))
+        self.treeview.heading("#0", text="Nombre")
+        self.treeview.heading("#1", text="Fecha")
+        self.treeview.heading("#2", text="Comentario")
+        self.treeview.pack()
+        tk.Label(self.summary_tab, text="Total:").pack()
+        self.total_label = tk.Label(self.summary_tab, text="$0")
+        self.total_label.pack()
+
+    def add_patient(self):
+        patient_name = self.patient_name_entry.get()
+        attention_date = self.attention_date_entry.get()
+        comment = self.comment_entry.get()
+        if patient_name and attention_date:
+            patient = (patient_name, attention_date, comment)
+            self.patients.append(patient)
+            self.treeview.insert("", "end", text=patient_name, values=(attention_date, comment))
+            total = len(self.patients) * 12000
+            self.total_label.config(text=f"${total}")
+            self.clear_form()
+
+    def clear_form(self):
+        self.patient_name_entry.delete(0, 'end')
+        self.attention_date_entry.delete(0, 'end')
+        self.comment_entry.delete(0, 'end')
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = App(root)
+    root.mainloop()
